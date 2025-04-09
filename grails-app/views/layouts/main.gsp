@@ -41,7 +41,7 @@
                     <asset:image src="advancedgrails.svg" alt="Grails Guides" class="float-left"/>
                 </a>
                 <strong class="centered"><a href="https://guides.grails.org" target="_blank">Grails Guides</a></strong>
-                <p>Building your first Grails app? Looking to add security, or create a Single-Page-App? Check out the <a href="https://guides.grails.org" target="_blank">Grails Guides</a> for step-by-step tutorials.</p>
+                <p>Hola me llamo Axel your first Grails app? Looking to add security, or create a Single-Page-App? Check out the <a href="https://guides.grails.org" target="_blank">Grails Guides</a> for step-by-step tutorials.</p>
 
             </div>
             <div class="col">

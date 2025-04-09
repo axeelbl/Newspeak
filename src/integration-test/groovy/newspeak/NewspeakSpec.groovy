@@ -1,4 +1,4 @@
-package com.example
+package newspeak
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
 

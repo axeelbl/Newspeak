@@ -1,3 +1,11 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Axel
+  Date: 09/04/2025
+  Time: 20:13
+--%>
+
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
