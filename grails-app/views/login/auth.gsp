@@ -83,8 +83,8 @@
 
 <!-- Formulario de login para Spring Security -->
     <form action="${request.contextPath}/j_spring_security_check" method="post">
-        <input type="text" name="j_username" class="input-field" placeholder="Usuario" required/>
-        <input type="password" name="j_password" class="input-field" placeholder="Contraseña" required/>
+        <input type="text" name="username" class="input-field" placeholder="Usuario" required/>
+        <input type="password" name="password" class="input-field" placeholder="Contraseña" required/>
         <button type="submit" class="submit-btn">Iniciar sesión</button>
     </form>
 

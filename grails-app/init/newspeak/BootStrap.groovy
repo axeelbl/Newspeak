@@ -3,15 +3,25 @@ package newspeak
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class BootStrap {
-
     PasswordEncoder passwordEncoder
 
     def init = { servletContext ->
-        // Crea los roles si no existen
-        def userRole = Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(flush: true)
-        def adminRole = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN').save(flush: true)
+        // Crear roles si no existen
+        def userRole
+        if (!Role.findByAuthority('ROLE_USER')) {
+            userRole = new Role(authority: 'ROLE_USER').save(flush: true)
+        } else {
+            userRole = Role.findByAuthority('ROLE_USER')
+        }
 
-        // Crea un usuario administrador si no existe
+        def adminRole
+        if (!Role.findByAuthority('ROLE_ADMIN')) {
+            adminRole = new Role(authority: 'ROLE_ADMIN').save(flush: true)
+        } else {
+            adminRole = Role.findByAuthority('ROLE_ADMIN')
+        }
+
+        // Crear usuario de prueba si no existe
         if (!User.findByUsername('admin')) {
             def adminUser = new User(
                     username: 'admin',
@@ -20,7 +30,16 @@ class BootStrap {
             ).save(flush: true)
 
             UserRole.create(adminUser, adminRole, true)
-            println "Usuario admin creado"
+        }
+
+        if (!User.findByUsername('usuario')) {
+            def normalUser = new User(
+                    username: 'usuario',
+                    password: passwordEncoder.encode('usuario123'),
+                    enabled: true
+            ).save(flush: true)
+
+            UserRole.create(normalUser, userRole, true)
         }
     }
 

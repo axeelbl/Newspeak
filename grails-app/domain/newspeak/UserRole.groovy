@@ -1,17 +1,20 @@
+// UserRole.groovy
 package newspeak
 
+import org.bson.types.ObjectId
+
 class UserRole {
+    ObjectId id
     User user
     Role role
-
-    static mapping = {
-        id composite: ['user', 'role']
-    }
 
     static constraints = {
         user nullable: false
         role nullable: false
-        version false
+    }
+
+    static mapping = {
+        collection "user_roles"
     }
 
     static UserRole create(User user, Role role, boolean flush = false) {
@@ -30,6 +33,8 @@ class UserRole {
     }
 
     static void removeAll(User user) {
-        executeUpdate 'DELETE FROM UserRole WHERE user=:user', [user: user]
+        UserRole.findAllByUser(user).each {
+            it.delete()
+        }
     }
 }

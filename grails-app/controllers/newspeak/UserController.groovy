@@ -3,28 +3,15 @@ package newspeak
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class UserController {
-
+    PasswordEncoder passwordEncoder
     def springSecurityService
-    PasswordEncoder passwordEncoder // Inyectar el codificador de contraseñas
 
-    // Ya no necesitas esta acción para login si usas Spring Security correctamente
-    def login() {
+    // Acción para registro
+    def register() {
         if (springSecurityService.isLoggedIn()) {
             redirect(controller: 'home', action: 'index')
             return
         }
-        render(view: "login")
-    }
-
-    // La autenticación debería ser manejada por Spring Security
-    def auth() {
-        // Este método debería ser manejado por la configuración de Spring Security
-        // Sólo se usa para mostrar errores de login
-        render(view: 'login')
-    }
-
-    // Acción para registro
-    def register() {
         render(view: 'register', model: [user: new User()])
     }
 
@@ -32,6 +19,7 @@ class UserController {
     def save() {
         if (params.password != params.confirmPassword) {
             flash.message = "Las contraseñas no coinciden"
+            flash.error = true
             render(view: "register", model: [user: new User(username: params.username)])
             return
         }
@@ -53,12 +41,8 @@ class UserController {
             redirect(controller: "login", action: "auth")
         } else {
             flash.message = "Error al crear el usuario. Por favor, inténtelo de nuevo."
+            flash.error = true
             render(view: "register", model: [user: user])
         }
-    }
-
-    // Logout (opcional, normalmente manejado por Spring Security)
-    def logout() {
-        redirect(uri: '/j_spring_security_logout')
     }
 }

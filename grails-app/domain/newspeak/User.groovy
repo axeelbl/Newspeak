@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class User implements UserDetails {
-
     ObjectId id
     String username
     String password
@@ -21,44 +20,24 @@ class User implements UserDetails {
     }
 
     static mapping = {
-        id generator: 'org.hibernate.id.UUIDGenerator'
+        collection "users"
     }
 
-    @Override
-    String getUsername() {
-        return username
-    }
-
-    @Override
-    boolean isAccountNonExpired() {
-        return !accountExpired
-    }
-
-    @Override
-    boolean isAccountNonLocked() {
-        return !accountLocked
-    }
-
-    @Override
-    boolean isCredentialsNonExpired() {
-        return !passwordExpired
-    }
-
-    @Override
-    boolean isEnabled() {
-        return enabled
-    }
-
-    @Override
     Collection<? extends GrantedAuthority> getAuthorities() {
-        // Obtener las autoridades desde UserRole
         UserRole.findAllByUser(this).collect {
             new SimpleGrantedAuthority(it.role.authority)
         }
     }
 
-    @Override
-    String getPassword() {
-        return password
+    boolean isAccountNonExpired() {
+        return !accountExpired
+    }
+
+    boolean isAccountNonLocked() {
+        return !accountLocked
+    }
+
+    boolean isCredentialsNonExpired() {
+        return !passwordExpired
     }
 }

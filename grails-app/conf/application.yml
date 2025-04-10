@@ -1,12 +1,13 @@
 info:
   app:
-    name: '@info.app.name@'
-    version: '@info.app.version@'
-    grailsVersion: '@info.app.grailsVersion@'
+    name: 'Newspeak'
+    version: '1.0'
+    grailsVersion: '5.2.1'
 
 grails:
   mongodb:
     url: mongodb+srv://admin:XCpYPj7qUQgo2Ldn@cluster0.s4ikkos.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    databaseName: newspeak
 
   views:
     default:
@@ -62,6 +63,10 @@ grails:
     springsecurity:
       userLookup:
         userDomainClassName: 'newspeak.User'
+        usernamePropertyName: 'username'
+        enabledPropertyName: 'enabled'
+        passwordPropertyName: 'password'
+        authoritiesPropertyName: 'authorities'
         authorityJoinClassName: 'newspeak.UserRole'
       authority:
         className: 'newspeak.Role'
@@ -108,3 +113,42 @@ grails:
         defaultTargetUrl: '/home/index'
       password:
         algorithm: 'bcrypt'
+      # Parámetros para el formulario de login
+      apf:
+        filterProcessesUrl: '/j_spring_security_check'
+      usernameParameter: 'username'
+      passwordParameter: 'password'
+      # Activar logging para debug de autenticación
+      debug:
+        useFilter: true
+
+# Configuración de Logging
+logging:
+  level:
+    org.springframework.security: DEBUG
+    grails.plugin.springsecurity: DEBUG
+    newspeak: DEBUG
+    org.grails.mongodb: DEBUG
+
+# Configuración de Hibernate (desactivado para MongoDB)
+hibernate:
+  cache:
+    queries: false
+    use_second_level_cache: false
+    use_query_cache: false
+
+# Configuración de Datastore
+environments:
+  development:
+    dataSource:
+      dbCreate: none
+  test:
+    dataSource:
+      dbCreate: none
+  production:
+    dataSource:
+      dbCreate: none
+
+# Configuración del servidor
+server:
+  port: 8080

@@ -5,6 +5,7 @@ buildscript {
     }
     dependencies { // Not Published to Gradle Plugin Portal
         classpath "org.grails:grails-gradle-plugin:6.2.4"
+
     }
 }
 
