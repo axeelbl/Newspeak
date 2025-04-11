@@ -83,6 +83,7 @@ dependencies {
     testImplementation 'org.testcontainers:spock:1.17.0'
     implementation "org.grails.plugins:mongodb"
     implementation "org.grails.plugins:spring-security-core:5.1.1"
+
 }
 
 application {

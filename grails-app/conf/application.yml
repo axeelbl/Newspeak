@@ -2,7 +2,7 @@ info:
   app:
     name: 'Newspeak'
     version: '1.0'
-    grailsVersion: '5.2.1'
+    grailsVersion: '6.2.4'
 
 grails:
   mongodb:
@@ -152,3 +152,8 @@ environments:
 # Configuración del servidor
 server:
   port: 8080
+
+
+# API key de https://newsapi.org/
+newsapi:
+  key: "133483cbeb2a4d6793487fe95aa5d807"
