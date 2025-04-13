@@ -83,6 +83,8 @@ dependencies {
     testImplementation 'org.testcontainers:spock:1.17.0'
     implementation "org.grails.plugins:mongodb"
     implementation "org.grails.plugins:spring-security-core:5.1.1"
+    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
 
 }
 

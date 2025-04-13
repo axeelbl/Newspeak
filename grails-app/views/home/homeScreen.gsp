@@ -215,10 +215,8 @@
                     <p>${article.description}</p>
                     <div class="news-actions">
                         <a href="${article.url}" target="_blank" class="read-more">Leer artículo completo</a>
-                        <form action="${createLink(controller: 'news', action: 'playAudio')}" method="post">
-                            <input type="hidden" name="newsUrl" value="${article.url}" />
-                            <button type="submit" class="listen-btn">Escuchar</button>
-                        </form>
+                        <button type="button" class="listen-btn" onclick="reproducirTexto('${article.title?.replaceAll("'", "\\\\'")}')">Escuchar</button>
+
                     </div>
                 </div>
             </div>
@@ -226,5 +224,83 @@
     </div>
 </div>
 
+<script>
+    function reproducirTexto(texto) {
+        console.log("Reproduciendo texto:", texto);
+
+        // Comprobar si el navegador soporta la API de síntesis de voz
+        if ('speechSynthesis' in window) {
+            // Crear una nueva instancia de SpeechSynthesisUtterance
+            const utterance = new SpeechSynthesisUtterance(texto);
+
+            // Configurar el idioma en español
+            utterance.lang = 'es-ES';
+
+            // Opcional: ajustar la velocidad del habla (0.1 a 10)
+            utterance.rate = 1.0;
+
+            // Opcional: ajustar el tono (0 a 2)
+            utterance.pitch = 1.0;
+
+            // Mostrar notificación
+            mostrarNotificacion('Reproduciendo audio...', 'info');
+
+            // Eventos para manejar la síntesis
+            utterance.onstart = () => {
+                console.log("Comenzó la síntesis de voz");
+            };
+
+            utterance.onend = () => {
+                console.log("Finalizó la síntesis de voz");
+            };
+
+            utterance.onerror = (event) => {
+                console.error("Error en la síntesis de voz:", event);
+                mostrarNotificacion('Error al reproducir el audio: ' + event.error, 'error');
+            };
+
+            // Reproducir el texto
+            speechSynthesis.speak(utterance);
+        } else {
+            console.error("Este navegador no soporta la API de síntesis de voz");
+            mostrarNotificacion('Tu navegador no soporta la síntesis de voz', 'error');
+        }
+    }
+
+    function mostrarNotificacion(mensaje, tipo) {
+        // Crear el elemento de notificación
+        const notificacion = document.createElement('div');
+        notificacion.style.position = 'fixed';
+        notificacion.style.bottom = '20px';
+        notificacion.style.right = '20px';
+        notificacion.style.padding = '12px 20px';
+        notificacion.style.borderRadius = '5px';
+        notificacion.style.zIndex = '1000';
+        notificacion.style.boxShadow = '0 3px 10px rgba(0,0,0,0.2)';
+        notificacion.style.transition = 'opacity 0.5s';
+        notificacion.textContent = mensaje;
+
+        // Establecer color según tipo
+        if (tipo === 'error') {
+            notificacion.style.backgroundColor = '#e74c3c';
+            notificacion.style.color = 'white';
+        } else {
+            notificacion.style.backgroundColor = '#3498db'; <!--3498db -->
+            notificacion.style.color = 'white';
+        }
+
+        // Añadir al DOM
+        document.body.appendChild(notificacion);
+
+        // Eliminar después de 4 segundos
+        setTimeout(() => {
+            notificacion.style.opacity = '0';
+            setTimeout(() => document.body.removeChild(notificacion), 500);
+        }, 4000);
+    }
+</script>
+
 </body>
 </html>
+
+<!-- CASI FUNCIONA -->

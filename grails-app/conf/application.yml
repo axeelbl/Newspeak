@@ -20,7 +20,8 @@ grails:
         scriptlet: html
         taglib: none
         staticparts: none
-
+    converters:
+      encoding: UTF-8
   mime:
     disable:
       accept:
@@ -142,12 +143,21 @@ environments:
   development:
     dataSource:
       dbCreate: none
+    murf:
+      api:
+        key: "ap2_8248cb30-22b8-4785-9419-7b7298760409"
+        endpoint: "https://api.murf.ai/v1/speech/generate"
   test:
     dataSource:
       dbCreate: none
   production:
     dataSource:
       dbCreate: none
+    murf:
+      api:
+        key: "${MURF_API_KEY}"
+        endpoint: "https://api.murf.ai/v1/speech/generate"
+
 
 # Configuración del servidor
 server:
@@ -157,3 +167,4 @@ server:
 # API key de https://newsapi.org/
 newsapi:
   key: "133483cbeb2a4d6793487fe95aa5d807"
+
