@@ -52,12 +52,10 @@ dependencies {
     implementation "org.grails:grails-plugin-url-mappings"
     implementation "org.grails:grails-web-boot"
     implementation "org.grails.plugins:gsp"
-    implementation "org.grails.plugins:mongodb"
     implementation "org.grails.plugins:scaffolding"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-actuator"
-    implementation "org.springframework.boot:spring-boot-starter-jetty"
     implementation "org.springframework.boot:spring-boot-starter-logging"
     implementation "org.springframework.boot:spring-boot-starter-validation"
     compileOnly "io.micronaut:micronaut-inject-groovy"
@@ -81,11 +79,12 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers:1.17.0'  // Usa la versión correcta
     testImplementation 'org.testcontainers:mongodb:1.17.0'      // Usa la versión correcta
     testImplementation 'org.testcontainers:spock:1.17.0'
-    implementation "org.grails.plugins:mongodb"
     implementation "org.grails.plugins:spring-security-core:5.1.1"
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-
+    implementation "org.springframework.boot:spring-boot-starter-tomcat"
+    implementation "org.grails.plugins:mongodb"
+    implementation "org.mongodb:mongodb-driver-sync"
 }
 
 application {

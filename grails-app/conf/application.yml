@@ -143,20 +143,13 @@ environments:
   development:
     dataSource:
       dbCreate: none
-    murf:
-      api:
-        key: "ap2_8248cb30-22b8-4785-9419-7b7298760409"
-        endpoint: "https://api.murf.ai/v1/speech/generate"
+
   test:
     dataSource:
       dbCreate: none
   production:
     dataSource:
       dbCreate: none
-    murf:
-      api:
-        key: "${MURF_API_KEY}"
-        endpoint: "https://api.murf.ai/v1/speech/generate"
 
 
 # Configuración del servidor
