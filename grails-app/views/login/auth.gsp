@@ -126,7 +126,7 @@
     </g:if>
 
     <form action="${request.contextPath}/j_spring_security_check" method="post">
-        <input type="text" name="username" class="input-field" placeholder="Usuario" required>
+        <input type="text" name="username" class="input-field" placeholder="Usuario o correo electrónico" required>
         <input type="password" name="password" class="input-field" placeholder="Contraseña" required>
         <button type="submit" class="submit-btn">Entrar</button>
     </form>

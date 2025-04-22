@@ -20,12 +20,13 @@ class UserController {
         if (params.password != params.confirmPassword) {
             flash.message = "Las contraseñas no coinciden"
             flash.error = true
-            render(view: "register", model: [user: new User(username: params.username)])
+            render(view: "register", model: [user: new User(username: params.username, email: params.email)])
             return
         }
 
         def user = new User(
                 username: params.username,
+                email: params.email,
                 password: passwordEncoder.encode(params.password),
                 enabled: true
         )

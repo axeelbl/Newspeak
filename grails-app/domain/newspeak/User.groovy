@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails
 class User implements UserDetails {
     ObjectId id
     String username
+    String email  // Asegúrate de que este campo esté aquí
     String password
     boolean enabled = true
     boolean accountExpired = false
@@ -16,6 +17,7 @@ class User implements UserDetails {
 
     static constraints = {
         username blank: false, unique: true
+        email email: true, blank: false, unique: true  // Y estas restricciones
         password blank: false
     }
 

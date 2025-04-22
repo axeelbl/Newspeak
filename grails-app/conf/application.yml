@@ -71,6 +71,8 @@ grails:
         authorityJoinClassName: 'newspeak.UserRole'
       authority:
         className: 'newspeak.Role'
+      userDetailsService:
+        className: 'newspeak.UserDetailsService'
       securityConfigType: "InterceptUrlMap"
       interceptUrlMap:
         - pattern: '/'

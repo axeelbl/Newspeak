@@ -137,6 +137,11 @@
         </div>
 
         <div class="input-group">
+            <label for="email">Correo electrónico:</label>
+            <g:textField name="email" class="input-field" value="${user?.email}" required="true" type="email" />
+        </div>
+
+        <div class="input-group">
             <label for="password">Contraseña:</label>
             <g:passwordField name="password" class="input-field" required="true" />
         </div>
