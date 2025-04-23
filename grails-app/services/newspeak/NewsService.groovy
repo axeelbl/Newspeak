@@ -8,11 +8,11 @@ class NewsService {
     // Inyección de GrailsApplication
     GrailsApplication grailsApplication
 
-    List<Map> getTopHeadlines() {
+    List<Map> getTopHeadlines(String searchTerm = "Actualidad") {
         try {
             // Usamos directamente la API key sin configuración
             def lenguaje = "es"
-            def tema = "Actualidad"
+            def tema = searchTerm ?: "Actualidad"
             // Obtener la API key de la configuración
             def apiKey = grailsApplication.config.newsapi.key
             def url = "https://newsapi.org/v2/everything?q=${tema}&language=${lenguaje}&apiKey=${apiKey}"

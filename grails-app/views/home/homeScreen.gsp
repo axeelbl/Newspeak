@@ -194,6 +194,61 @@
         background-color: #3498db;
     }
 
+    /* Estilos para la barra de búsqueda */
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .search-form {
+        display: flex;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .search-input {
+        flex-grow: 1;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+        font-size: 15px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: #3498db;
+    }
+
+    .search-button {
+        padding: 0 20px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background-color 0.3s;
+    }
+
+    .search-button:hover {
+        background-color: #2980b9;
+    }
+
+    .no-news-message {
+        text-align: center;
+        padding: 40px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        color: #7f8c8d;
+        font-size: 18px;
+        margin: 20px 0;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .news-grid {
@@ -221,6 +276,21 @@
             width: 100%;
             justify-content: center;
         }
+
+        .search-form {
+            flex-direction: column;
+        }
+
+        .search-input {
+            border-radius: 8px 8px 0 0;
+            border-right: 1px solid #ddd;
+            border-bottom: none;
+        }
+
+        .search-button {
+            border-radius: 0 0 8px 8px;
+            padding: 10px;
+        }
     }
     </style>
 </head>
@@ -239,28 +309,61 @@
 
     <p class="welcome-text">¡Bienvenido a tu portal de noticias personalizado! Descubre las últimas novedades.</p>
 
-    <!-- Contenedor de noticias -->
-    <h2 class="section-title">Últimas noticias</h2>
+    <!-- Barra de búsqueda -->
+    <div class="search-container">
+        <form action="/home/homeScreen" method="GET" class="search-form">
+            <input
+                    type="text"
+                    name="searchTerm"
+                    class="search-input"
+                    placeholder="Buscar noticias por tema..."
+                    value="${params.searchTerm ?: ''}"
+            >
+            <button type="submit" class="search-button">Buscar</button>
+        </form>
+    </div>
 
-    <div class="news-grid">
-        <g:each var="article" in="${articles}">
-            <div class="news-card">
-                <div class="news-image-container">
-                    <img src="${article.urlToImage ?: 'https://via.placeholder.com/300x180?text=Newspeak'}"
-                         alt="${article.title}"
-                         onerror="this.src='https://via.placeholder.com/300x180?text=Newspeak'"/>
-                </div>
-                <div class="news-content">
-                    <h3>${article.title}</h3>
-                    <p>${article.description}</p>
-                    <div class="news-actions">
-                        <a href="${article.url}" target="_blank" class="read-more">Leer artículo completo</a>
-                        <button type="button" class="listen-btn" onclick="reproducirTexto('${article.title?.replaceAll("'", "\\\\'")}')">Escuchar</button>
+    <!-- Contenedor de noticias -->
+    <h2 class="section-title">
+        <g:if test="${params.searchTerm}">
+            Resultados para "${params.searchTerm}"
+        </g:if>
+        <g:else>
+            Últimas noticias
+        </g:else>
+    </h2>
+
+    <g:if test="${articles && !articles.isEmpty()}">
+        <div class="news-grid">
+            <g:each var="article" in="${articles}">
+                <div class="news-card">
+                    <div class="news-image-container">
+                        <img src="${article.urlToImage ?: 'https://via.placeholder.com/300x180?text=Newspeak'}"
+                             alt="${article.title}"
+                             onerror="this.src='https://via.placeholder.com/300x180?text=Newspeak'"/>
+                    </div>
+                    <div class="news-content">
+                        <h3>${article.title}</h3>
+                        <p>${article.description}</p>
+                        <div class="news-actions">
+                            <a href="${article.url}" target="_blank" class="read-more">Leer artículo completo</a>
+                            <button type="button" class="listen-btn" onclick="reproducirTexto('${article.title?.replaceAll("'", "\\\\'")}')">Escuchar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </g:each>
-    </div>
+            </g:each>
+        </div>
+    </g:if>
+    <g:else>
+        <div class="no-news-message">
+            <g:if test="${params.searchTerm}">
+                No se encontraron noticias para "${params.searchTerm}". Intenta con otro término de búsqueda.
+            </g:if>
+            <g:else>
+                No hay noticias disponibles en este momento.
+            </g:else>
+        </div>
+    </g:else>
 </div>
 
 <script>

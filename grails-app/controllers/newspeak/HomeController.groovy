@@ -6,7 +6,11 @@ class HomeController {
 
     def homeScreen() {
         try {
-            def articles = newsService.getTopHeadlines()
+            // Obtener el término de búsqueda de los parámetros de la solicitud
+            def searchTerm = params.searchTerm
+
+            // Pasar el término de búsqueda al servicio si existe
+            def articles = searchTerm ? newsService.getTopHeadlines(searchTerm) : newsService.getTopHeadlines()
 
             if (articles && !articles.isEmpty()) {
                 return [articles: articles]
@@ -17,7 +21,6 @@ class HomeController {
             return [articles: [], error: "Error al obtener noticias: ${e.message}"]
         }
     }
-
 
     // Esta función es necesaria para redirigir 'homeScreen' a 'Index', si no no funciona.
     def index() {
