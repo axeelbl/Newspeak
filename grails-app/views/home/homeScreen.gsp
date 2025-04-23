@@ -36,6 +36,12 @@
         font-size: 24px;
     }
 
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
     .logout-btn {
         padding: 8px 16px;
         background-color: #e74c3c;
@@ -49,6 +55,21 @@
 
     .logout-btn:hover {
         background-color: #c0392b;
+    }
+
+    .listen-all-btn {
+        padding: 10px 18px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+    }
+
+    .listen-all-btn:hover {
+        background-color: #2980b9;
     }
 
     .welcome-text {
@@ -178,11 +199,27 @@
         .news-grid {
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
         }
+
+        .header-actions {
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 
     @media (max-width: 480px) {
         .news-grid {
             grid-template-columns: 1fr;
+        }
+
+        header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .header-actions {
+            width: 100%;
+            justify-content: center;
         }
     }
     </style>
@@ -192,9 +229,12 @@
 <div class="main-container">
     <header>
         <h1 class="header-title">Newspeak</h1>
-        <form action="/logout" method="POST">
-            <button type="submit" class="logout-btn">Cerrar sesión</button>
-        </form>
+        <div class="header-actions">
+            <button id="listenAllNews" class="listen-all-btn">Escuchar las noticias del día</button>
+            <form action="/logout" method="POST">
+                <button type="submit" class="logout-btn">Cerrar sesión</button>
+            </form>
+        </div>
     </header>
 
     <p class="welcome-text">¡Bienvenido a tu portal de noticias personalizado! Descubre las últimas novedades.</p>
@@ -216,7 +256,6 @@
                     <div class="news-actions">
                         <a href="${article.url}" target="_blank" class="read-more">Leer artículo completo</a>
                         <button type="button" class="listen-btn" onclick="reproducirTexto('${article.title?.replaceAll("'", "\\\\'")}')">Escuchar</button>
-
                     </div>
                 </div>
             </div>
@@ -225,6 +264,7 @@
 </div>
 
 <script>
+    // Función original para reproducir un solo título
     function reproducirTexto(texto) {
         console.log("Reproduciendo texto:", texto);
 
@@ -245,20 +285,6 @@
             // Mostrar notificación
             mostrarNotificacion('Reproduciendo audio...', 'info');
 
-            // Eventos para manejar la síntesis
-            utterance.onstart = () => {
-                console.log("Comenzó la síntesis de voz");
-            };
-
-            utterance.onend = () => {
-                console.log("Finalizó la síntesis de voz");
-            };
-
-            utterance.onerror = (event) => {
-                console.error("Error en la síntesis de voz:", event);
-                mostrarNotificacion('Error al reproducir el audio: ' + event.error, 'error');
-            };
-
             // Reproducir el texto
             speechSynthesis.speak(utterance);
         } else {
@@ -266,6 +292,53 @@
             mostrarNotificacion('Tu navegador no soporta la síntesis de voz', 'error');
         }
     }
+
+    // Versión simplificada para reproducir varias noticias
+    document.getElementById('listenAllNews').addEventListener('click', function() {
+        // Recopilar los títulos de las noticias
+        const newsCards = document.querySelectorAll('.news-card');
+        const newsTitles = [];
+
+        // Obtener solo los títulos
+        for (let i = 0; i < newsCards.length && i < 5; i++) {
+            const title = newsCards[i].querySelector('h3').textContent;
+            newsTitles.push(title);
+        }
+
+        if (newsTitles.length === 0) {
+            mostrarNotificacion('No hay noticias disponibles para reproducir', 'error');
+            return;
+        }
+
+        // Detener cualquier síntesis en curso
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+
+        // Mostrar notificación
+        mostrarNotificacion('Reproduciendo las últimas noticias...', 'info');
+
+        // Reproducir todos los títulos en secuencia
+        let index = 0;
+
+        function reproducirSiguiente() {
+            if (index < newsTitles.length) {
+                const utterance = new SpeechSynthesisUtterance(newsTitles[index]);
+                utterance.lang = 'es-ES';
+
+                utterance.onend = function() {
+                    index++;
+                    reproducirSiguiente();
+                };
+
+                speechSynthesis.speak(utterance);
+            } else {
+                mostrarNotificacion('Reproducción de noticias completada', 'info');
+            }
+        }
+
+        reproducirSiguiente();
+    });
 
     function mostrarNotificacion(mensaje, tipo) {
         // Crear el elemento de notificación
@@ -285,7 +358,7 @@
             notificacion.style.backgroundColor = '#e74c3c';
             notificacion.style.color = 'white';
         } else {
-            notificacion.style.backgroundColor = '#3498db'; <!--3498db -->
+            notificacion.style.backgroundColor = '#3498db';
             notificacion.style.color = 'white';
         }
 
@@ -302,5 +375,3 @@
 
 </body>
 </html>
-
-<!-- CASI FUNCIONA -->
