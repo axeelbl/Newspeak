@@ -2,27 +2,31 @@ package newspeak
 
 class HomeController {
 
-    def newsService // Inyección del servicio de noticias
+    def newsService
+    def springSecurityService
 
     def homeScreen() {
         try {
-            // Obtener el término de búsqueda de los parámetros de la solicitud
             def searchTerm = params.searchTerm
-
-            // Pasar el término de búsqueda al servicio si existe
             def articles = searchTerm ? newsService.getTopHeadlines(searchTerm) : newsService.getTopHeadlines()
 
+            // Determinar si el usuario tiene rol de administrador
+            def isAdmin = false
+            if (springSecurityService.isLoggedIn()) {
+                def user = springSecurityService.currentUser
+                isAdmin = user.authorities.any { it.authority == 'ROLE_ADMIN' }
+            }
+
             if (articles && !articles.isEmpty()) {
-                return [articles: articles]
+                return [articles: articles, isAdmin: isAdmin]
             } else {
-                return [articles: [], error: "No se pudieron obtener las noticias"]
+                return [articles: [], error: "No se pudieron obtener las noticias", isAdmin: isAdmin]
             }
         } catch (Exception e) {
-            return [articles: [], error: "Error al obtener noticias: ${e.message}"]
+            return [articles: [], error: "Error al obtener noticias: ${e.message}", isAdmin: false]
         }
     }
 
-    // Esta función es necesaria para redirigir 'homeScreen' a 'Index', si no no funciona.
     def index() {
         redirect(action: "homeScreen")
     }

@@ -5,15 +5,12 @@ import groovy.json.JsonSlurper
 
 class NewsService {
 
-    // Inyección de GrailsApplication
     GrailsApplication grailsApplication
 
     List<Map> getTopHeadlines(String searchTerm = "Actualidad") {
         try {
-            // Usamos directamente la API key sin configuración
             def lenguaje = "es"
             def tema = searchTerm ?: "Actualidad"
-            // Obtener la API key de la configuración
             def apiKey = grailsApplication.config.newsapi.key
             def url = "https://newsapi.org/v2/everything?q=${tema}&language=${lenguaje}&apiKey=${apiKey}"
 
@@ -25,7 +22,7 @@ class NewsService {
 
             // Verificamos si hay artículos
             if (json.status == 'ok' && json.articles) {
-                return json.articles.collect { article ->
+                def articles = json.articles.collect { article ->
                     [
                             title: article.title,
                             description: article.description,
@@ -34,14 +31,46 @@ class NewsService {
                             urlToImage: article.urlToImage
                     ]
                 }
+
+                // Filtrar las noticias bloqueadas
+                def blockedUrls = BlockedNews.list().collect { it.url }
+                return articles.findAll { !blockedUrls.contains(it.url) }
             }
 
-            // Si llegamos aquí, algo falló
             return []
 
         } catch (Exception e) {
             println "Error en NewsService: ${e.message}"
             return []
         }
+    }
+
+    // Método para bloquear una noticia
+    def blockNews(String url, String reason, String username) {
+        if (!BlockedNews.findByUrl(url)) {
+            new BlockedNews(
+                    url: url,
+                    reason: reason,
+                    dateBlocked: new Date(),
+                    blockedBy: username
+            ).save(flush: true)
+            return true
+        }
+        return false
+    }
+
+    // Método para desbloquear una noticia
+    def unblockNews(String url) {
+        def blockedNews = BlockedNews.findByUrl(url)
+        if (blockedNews) {
+            blockedNews.delete(flush: true)
+            return true
+        }
+        return false
+    }
+
+    // Obtener todas las noticias bloqueadas
+    def getBlockedNews() {
+        BlockedNews.list()
     }
 }

@@ -224,6 +224,15 @@
         font-size: 18px;
         padding: 40px 0;
     }
+
+    .btn-admin {
+        background-color: #9b59b6;
+        color: #fff;
+    }
+
+    .btn-admin:hover {
+        background-color: #8e44ad;
+    }
     </style>
 </head>
 <body>
@@ -235,6 +244,9 @@
         </div>
         <div class="header-actions">
             <button id="listenAllNews" class="btn btn-listen">🎧 Escuchar noticias</button>
+            <g:if test="${isAdmin}">
+                <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="btn btn-admin">⚙️ Administrar</a>
+            </g:if>
             <form action="/logout" method="POST">
                 <button type="submit" class="btn btn-logout">🔒 Cerrar sesión</button>
             </form>
