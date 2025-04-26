@@ -80,7 +80,7 @@ Newspeak es una aplicación web desarrollada con Grails siguiendo el patrón MVC
 ### Despliegue en producción
 1. Genera el WAR:
     ```bash
-    ./gradlew assemble
+    ./gradlew war
     ```
 2. Copia el archivo `.war` generado a tu servidor con Tomcat 9.
 3. Configura Tomcat para desplegar el WAR.
