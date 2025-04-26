@@ -1,6 +1,6 @@
 # 📰 Newspeak
 
-Newspeak es una aplicación web desarrollada con Grails siguiendo el patrón MVC. Permite a los usuarios consultar noticias actualizadas a través de la API de NewsAPI.org y escuchar su contenido leído en voz alta mediante el servicio de Murf.ai.
+Newspeak es una aplicación web desarrollada con Grails siguiendo el patrón MVC. Permite a los usuarios consultar noticias actualizadas a través de la API de NewsAPI.org y escuchar su contenido leído en voz alta mediante el servicio de Audio.
 
 ## 🚀 Características principales
 - Registro e inicio de sesión de usuarios.
