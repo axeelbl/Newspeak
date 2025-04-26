@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newspeak - Gestión de Noticias</title>
+    <title>Newspeak - Gestión de Artículos</title>
     <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -172,15 +172,36 @@
         border-bottom: none;
     }
 
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .status-published {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .status-unpublished {
+        background-color: #e74c3c;
+        color: white;
+    }
+
     .no-data {
         text-align: center;
         padding: 20px;
         color: #7f8c8d;
     }
 
-    .url-column {
-        max-width: 300px;
-        word-break: break-all;
+    .article-title {
+        font-weight: 600;
+    }
+
+    .actions-container {
+        display: flex;
+        gap: 5px;
     }
     </style>
 </head>
@@ -200,9 +221,9 @@
     </header>
 
     <div class="nav-links">
-        <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="nav-link active">Gestionar Noticias</a>
+        <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="nav-link">Gestionar Noticias</a>
         <a href="${createLink(controller: 'admin', action: 'manageWriters')}" class="nav-link">Gestionar Escritores</a>
-        <a href="${createLink(controller: 'admin', action: 'manageArticles')}" class="nav-link">Gestionar Artículos</a>
+        <a href="${createLink(controller: 'admin', action: 'manageArticles')}" class="nav-link active">Gestionar Artículos</a>
     </div>
 
     <g:if test="${flash.message}">
@@ -217,30 +238,41 @@
         </div>
     </g:if>
 
-    <h2 class="section-title">Noticias bloqueadas</h2>
+    <h2 class="section-title">Artículos de los escritores</h2>
 
-    <g:if test="${blockedNews && !blockedNews.isEmpty()}">
+    <g:if test="${articles && !articles.isEmpty()}">
         <table>
             <thead>
             <tr>
-                <th>URL</th>
-                <th>Razón</th>
-                <th>Fecha de bloqueo</th>
-                <th>Bloqueado por</th>
+                <th>Título</th>
+                <th>Autor</th>
+                <th>Fecha de creación</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            <g:each var="news" in="${blockedNews}">
+            <g:each var="article" in="${articles}">
                 <tr>
-                    <td class="url-column">${news.url}</td>
-                    <td>${news.reason}</td>
-                    <td><g:formatDate date="${news.dateBlocked}" format="dd/MM/yyyy HH:mm" /></td>
-                    <td>${news.blockedBy}</td>
+                    <td class="article-title">${article.title}</td>
+                    <td>${article.author.username}</td>
+                    <td><g:formatDate date="${article.dateCreated}" format="dd/MM/yyyy HH:mm" /></td>
                     <td>
-                        <form action="${createLink(controller: 'admin', action: 'unblockNews')}" method="POST">
-                            <input type="hidden" name="url" value="${news.url}" />
-                            <button type="submit" class="btn btn-success">Desbloquear</button>
+                        <span class="status ${article.published ? 'status-published' : 'status-unpublished'}">
+                            ${article.published ? 'Publicado' : 'No publicado'}
+                        </span>
+                    </td>
+                    <td class="actions-container">
+                        <a href="${createLink(controller: 'article', action: 'view', id: article.id)}" class="btn btn-primary" target="_blank">Ver</a>
+                        <form action="${createLink(controller: 'admin', action: 'toggleArticleStatus')}" method="POST" style="display: inline;">
+                            <input type="hidden" name="id" value="${article.id}" />
+                            <button type="submit" class="btn ${article.published ? 'btn-danger' : 'btn-success'}">
+                                ${article.published ? 'Despublicar' : 'Publicar'}
+                            </button>
+                        </form>
+                        <form action="${createLink(controller: 'admin', action: 'deleteArticle')}" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea eliminar este artículo?');">
+                            <input type="hidden" name="id" value="${article.id}" />
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -249,7 +281,7 @@
         </table>
     </g:if>
     <g:else>
-        <p class="no-data">No hay noticias bloqueadas actualmente.</p>
+        <p class="no-data">No hay artículos disponibles actualmente.</p>
     </g:else>
 </div>
 </body>

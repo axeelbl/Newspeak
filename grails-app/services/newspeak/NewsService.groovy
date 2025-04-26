@@ -9,6 +9,7 @@ class NewsService {
 
     List<Map> getTopHeadlines(String searchTerm = "Actualidad") {
         try {
+            // Obtener noticias de la API
             def lenguaje = "es"
             def tema = searchTerm ?: "Actualidad"
             def apiKey = grailsApplication.config.newsapi.key
@@ -20,24 +21,43 @@ class NewsService {
             def responseText = connection.inputStream.text
             def json = new JsonSlurper().parseText(responseText)
 
-            // Verificamos si hay artículos
+            def articles = []
+
+            // Procesar artículos de la API
             if (json.status == 'ok' && json.articles) {
-                def articles = json.articles.collect { article ->
+                articles = json.articles.collect { article ->
                     [
                             title: article.title,
                             description: article.description,
                             content: article.content,
                             url: article.url,
-                            urlToImage: article.urlToImage
+                            urlToImage: article.urlToImage,
+                            source: "api"
                     ]
                 }
-
-                // Filtrar las noticias bloqueadas
-                def blockedUrls = BlockedNews.list().collect { it.url }
-                return articles.findAll { !blockedUrls.contains(it.url) }
             }
 
-            return []
+            // Obtener artículos propios publicados
+            def ownArticles = Article.findAllByPublished(true).collect { article ->
+                [
+                        title: article.title,
+                        description: article.description,
+                        content: article.content,
+                        url: "/article/view/${article.id}",
+                        urlToImage: article.imageUrl ?: "https://via.placeholder.com/300x180?text=Newspeak",
+                        author: article.author.username,
+                        dateCreated: article.dateCreated,
+                        id: article.id,
+                        source: "own"
+                ]
+            }
+
+            // Combinar ambas fuentes de noticias
+            articles.addAll(ownArticles)
+
+            // Filtrar las noticias bloqueadas
+            def blockedUrls = BlockedNews.list().collect { it.url }
+            return articles.findAll { !blockedUrls.contains(it.url) }
 
         } catch (Exception e) {
             println "Error en NewsService: ${e.message}"

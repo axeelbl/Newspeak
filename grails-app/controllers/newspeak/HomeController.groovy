@@ -10,20 +10,24 @@ class HomeController {
             def searchTerm = params.searchTerm
             def articles = searchTerm ? newsService.getTopHeadlines(searchTerm) : newsService.getTopHeadlines()
 
-            // Determinar si el usuario tiene rol de administrador
+            // Determinar roles del usuario
             def isAdmin = false
+            def isWriter = false
+
             if (springSecurityService.isLoggedIn()) {
                 def user = springSecurityService.currentUser
-                isAdmin = user.authorities.any { it.authority == 'ROLE_ADMIN' }
+                def authorities = user.authorities.collect { it.authority }
+                isAdmin = authorities.contains('ROLE_ADMIN')
+                isWriter = authorities.contains('ROLE_WRITER')
             }
 
             if (articles && !articles.isEmpty()) {
-                return [articles: articles, isAdmin: isAdmin]
+                return [articles: articles, isAdmin: isAdmin, isWriter: isWriter]
             } else {
-                return [articles: [], error: "No se pudieron obtener las noticias", isAdmin: isAdmin]
+                return [articles: [], error: "No se pudieron obtener las noticias", isAdmin: isAdmin, isWriter: isWriter]
             }
         } catch (Exception e) {
-            return [articles: [], error: "Error al obtener noticias: ${e.message}", isAdmin: false]
+            return [articles: [], error: "Error al obtener noticias: ${e.message}", isAdmin: false, isWriter: false]
         }
     }
 

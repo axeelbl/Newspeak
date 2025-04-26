@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newspeak - Gestión de Noticias</title>
+    <title>Newspeak - Gestión de Escritores</title>
     <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -177,11 +177,6 @@
         padding: 20px;
         color: #7f8c8d;
     }
-
-    .url-column {
-        max-width: 300px;
-        word-break: break-all;
-    }
     </style>
 </head>
 <body>
@@ -200,8 +195,8 @@
     </header>
 
     <div class="nav-links">
-        <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="nav-link active">Gestionar Noticias</a>
-        <a href="${createLink(controller: 'admin', action: 'manageWriters')}" class="nav-link">Gestionar Escritores</a>
+        <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="nav-link">Gestionar Noticias</a>
+        <a href="${createLink(controller: 'admin', action: 'manageWriters')}" class="nav-link active">Gestionar Escritores</a>
         <a href="${createLink(controller: 'admin', action: 'manageArticles')}" class="nav-link">Gestionar Artículos</a>
     </div>
 
@@ -217,30 +212,26 @@
         </div>
     </g:if>
 
-    <h2 class="section-title">Noticias bloqueadas</h2>
+    <h2 class="section-title">Escritores actuales</h2>
 
-    <g:if test="${blockedNews && !blockedNews.isEmpty()}">
+    <g:if test="${writers && !writers.isEmpty()}">
         <table>
             <thead>
             <tr>
-                <th>URL</th>
-                <th>Razón</th>
-                <th>Fecha de bloqueo</th>
-                <th>Bloqueado por</th>
+                <th>Usuario</th>
+                <th>Email</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            <g:each var="news" in="${blockedNews}">
+            <g:each var="writer" in="${writers}">
                 <tr>
-                    <td class="url-column">${news.url}</td>
-                    <td>${news.reason}</td>
-                    <td><g:formatDate date="${news.dateBlocked}" format="dd/MM/yyyy HH:mm" /></td>
-                    <td>${news.blockedBy}</td>
+                    <td>${writer.username}</td>
+                    <td>${writer.email}</td>
                     <td>
-                        <form action="${createLink(controller: 'admin', action: 'unblockNews')}" method="POST">
-                            <input type="hidden" name="url" value="${news.url}" />
-                            <button type="submit" class="btn btn-success">Desbloquear</button>
+                        <form action="${createLink(controller: 'admin', action: 'removeWriterRole')}" method="POST">
+                            <input type="hidden" name="userId" value="${writer.id}" />
+                            <button type="submit" class="btn btn-danger">Quitar rol de escritor</button>
                         </form>
                     </td>
                 </tr>
@@ -249,7 +240,38 @@
         </table>
     </g:if>
     <g:else>
-        <p class="no-data">No hay noticias bloqueadas actualmente.</p>
+        <p class="no-data">No hay escritores actualmente.</p>
+    </g:else>
+
+    <h2 class="section-title">Usuarios sin rol de escritor</h2>
+
+    <g:if test="${nonWriters && !nonWriters.isEmpty()}">
+        <table>
+            <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each var="user" in="${nonWriters}">
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>
+                        <form action="${createLink(controller: 'admin', action: 'addWriterRole')}" method="POST">
+                            <input type="hidden" name="userId" value="${user.id}" />
+                            <button type="submit" class="btn btn-success">Asignar rol de escritor</button>
+                        </form>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </g:if>
+    <g:else>
+        <p class="no-data">No hay usuarios disponibles para asignar el rol de escritor.</p>
     </g:else>
 </div>
 </body>

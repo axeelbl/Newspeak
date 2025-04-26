@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Newspeak - Gestión de Noticias</title>
+    <title>Newspeak - Mis Artículos</title>
     <style>
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -44,31 +44,6 @@
         font-size: 26px;
         font-weight: 600;
         color: #2c3e50;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 30px;
-    }
-
-    .nav-link {
-        padding: 10px 20px;
-        background-color: #f8f9fa;
-        border-radius: 6px;
-        text-decoration: none;
-        color: #2c3e50;
-        font-weight: 500;
-        transition: all 0.3s;
-    }
-
-    .nav-link:hover {
-        background-color: #e9ecef;
-    }
-
-    .nav-link.active {
-        background-color: #3498db;
-        color: white;
     }
 
     .header-actions {
@@ -115,6 +90,15 @@
 
     .btn-danger:hover {
         background-color: #c0392b;
+    }
+
+    .btn-warning {
+        background-color: #f39c12;
+        color: #fff;
+    }
+
+    .btn-warning:hover {
+        background-color: #d35400;
     }
 
     .section-title {
@@ -172,15 +156,36 @@
         border-bottom: none;
     }
 
+    .status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .status-published {
+        background-color: #2ecc71;
+        color: white;
+    }
+
+    .status-unpublished {
+        background-color: #e74c3c;
+        color: white;
+    }
+
     .no-data {
         text-align: center;
         padding: 20px;
         color: #7f8c8d;
     }
 
-    .url-column {
-        max-width: 300px;
-        word-break: break-all;
+    .create-button {
+        margin-bottom: 20px;
+    }
+
+    .actions-container {
+        display: flex;
+        gap: 5px;
     }
     </style>
 </head>
@@ -189,7 +194,7 @@
     <header>
         <div class="logo-title">
             <img src="${resource(dir: 'images', file: 'logo.png')}" alt="NewSpeak Logo" class="logo-image" />
-            <h1 class="header-title">Newspeak - Panel de Administración</h1>
+            <h1 class="header-title">Newspeak - Panel de Escritor</h1>
         </div>
         <div class="header-actions">
             <a href="${createLink(controller: 'home', action: 'homeScreen')}" class="btn btn-primary">🏠 Volver a inicio</a>
@@ -198,12 +203,6 @@
             </form>
         </div>
     </header>
-
-    <div class="nav-links">
-        <a href="${createLink(controller: 'admin', action: 'manageNews')}" class="nav-link active">Gestionar Noticias</a>
-        <a href="${createLink(controller: 'admin', action: 'manageWriters')}" class="nav-link">Gestionar Escritores</a>
-        <a href="${createLink(controller: 'admin', action: 'manageArticles')}" class="nav-link">Gestionar Artículos</a>
-    </div>
 
     <g:if test="${flash.message}">
         <div class="flash-message flash-success">
@@ -217,30 +216,46 @@
         </div>
     </g:if>
 
-    <h2 class="section-title">Noticias bloqueadas</h2>
+    <div class="create-button">
+        <a href="${createLink(controller: 'writer', action: 'createArticle')}" class="btn btn-success">✏️ Crear nuevo artículo</a>
+    </div>
 
-    <g:if test="${blockedNews && !blockedNews.isEmpty()}">
+    <h2 class="section-title">Mis Artículos</h2>
+
+    <g:if test="${articles && !articles.isEmpty()}">
         <table>
             <thead>
             <tr>
-                <th>URL</th>
-                <th>Razón</th>
-                <th>Fecha de bloqueo</th>
-                <th>Bloqueado por</th>
+                <th>Título</th>
+                <th>Fecha de creación</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
             </thead>
             <tbody>
-            <g:each var="news" in="${blockedNews}">
+            <g:each var="article" in="${articles}">
                 <tr>
-                    <td class="url-column">${news.url}</td>
-                    <td>${news.reason}</td>
-                    <td><g:formatDate date="${news.dateBlocked}" format="dd/MM/yyyy HH:mm" /></td>
-                    <td>${news.blockedBy}</td>
+                    <td>${article.title}</td>
+                    <td><g:formatDate date="${article.dateCreated}" format="dd/MM/yyyy HH:mm" /></td>
                     <td>
-                        <form action="${createLink(controller: 'admin', action: 'unblockNews')}" method="POST">
-                            <input type="hidden" name="url" value="${news.url}" />
-                            <button type="submit" class="btn btn-success">Desbloquear</button>
+                        <span class="status ${article.published ? 'status-published' : 'status-unpublished'}">
+                            ${article.published ? 'Publicado' : 'No publicado'}
+                        </span>
+                    </td>
+                    <td class="actions-container">
+                        <a href="${createLink(controller: 'writer', action: 'editArticle', id: article.id)}" class="btn btn-primary">Editar</a>
+
+                        <!-- Botón para publicar/despublicar -->
+                        <form action="${createLink(controller: 'writer', action: 'togglePublishStatus')}" method="POST" style="display: inline;">
+                            <input type="hidden" name="id" value="${article.id}" />
+                            <button type="submit" class="btn ${article.published ? 'btn-warning' : 'btn-success'}">
+                                ${article.published ? 'Despublicar' : 'Publicar'}
+                            </button>
+                        </form>
+
+                        <form action="${createLink(controller: 'writer', action: 'deleteArticle')}" method="POST" style="display: inline;" onsubmit="return confirm('¿Está seguro de que desea eliminar este artículo?');">
+                            <input type="hidden" name="id" value="${article.id}" />
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -249,7 +264,7 @@
         </table>
     </g:if>
     <g:else>
-        <p class="no-data">No hay noticias bloqueadas actualmente.</p>
+        <p class="no-data">No has creado ningún artículo todavía.</p>
     </g:else>
 </div>
 </body>
