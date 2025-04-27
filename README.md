@@ -27,7 +27,7 @@ Newspeak es una aplicación web desarrollada con Grails siguiendo el patrón MVC
 - UserRole
 
 ### Controladores:
-- AricleController
+- ArticleController
 - ErrorController
 - HomeController
 - LoginController
