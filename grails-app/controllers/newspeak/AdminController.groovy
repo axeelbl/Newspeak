@@ -1,6 +1,7 @@
 package newspeak
 
 import grails.plugin.springsecurity.annotation.Secured
+import org.bson.types.ObjectId
 
 @Secured('ROLE_ADMIN')
 class AdminController {
@@ -41,14 +42,26 @@ class AdminController {
         redirect(action: "manageNews")
     }
 
-    // Métodos para gestionar los escritores
+    // Métodos para gestionar los escritores - CORREGIDO
     def manageWriters() {
         def writerRole = Role.findByAuthority('ROLE_WRITER')
-        def writers = UserRole.findAllByRole(writerRole).collect { it.user }
 
+        // Obtenemos los usuarios con rol de escritor
+        def writerUserRoles = UserRole.findAllByRole(writerRole)
+        def writers = []
+        writerUserRoles.each { userRole ->
+            def user = User.get(userRole.user.id)
+            if (user) {
+                writers.add(user)
+            }
+        }
+
+        // Obtenemos todos los usuarios
         def allUsers = User.list()
+
+        // Filtramos los usuarios que no tienen rol de escritor
         def nonWriters = allUsers.findAll { user ->
-            !UserRole.exists(user.id, writerRole.id)
+            !UserRole.findByUserAndRole(user, writerRole)
         }
 
         [writers: writers, nonWriters: nonWriters]
@@ -56,13 +69,33 @@ class AdminController {
 
     def addWriterRole() {
         def userId = params.userId
-        def user = User.get(userId)
+        def user
+
+        // Manejo correcto del ID para MongoDB
+        try {
+            if (userId instanceof String) {
+                user = User.get(new ObjectId(userId))
+            } else {
+                user = User.get(userId)
+            }
+        } catch (Exception e) {
+            flash.error = "ID de usuario inválido: ${e.message}"
+            redirect(action: "manageWriters")
+            return
+        }
+
         def writerRole = Role.findByAuthority('ROLE_WRITER')
 
         if (user && writerRole) {
-            if (!UserRole.exists(user.id, writerRole.id)) {
-                UserRole.create(user, writerRole, true)
-                flash.message = "Rol de escritor asignado a ${user.username} correctamente"
+            def existingRole = UserRole.findByUserAndRole(user, writerRole)
+            if (!existingRole) {
+                // Creamos la nueva relación usuario-rol
+                try {
+                    UserRole.create(user, writerRole, true)
+                    flash.message = "Rol de escritor asignado a ${user.username} correctamente"
+                } catch (Exception e) {
+                    flash.error = "Error al asignar rol: ${e.message}"
+                }
             } else {
                 flash.error = "El usuario ya tiene el rol de escritor"
             }
@@ -75,14 +108,32 @@ class AdminController {
 
     def removeWriterRole() {
         def userId = params.userId
-        def user = User.get(userId)
+        def user
+
+        // Manejo correcto del ID para MongoDB
+        try {
+            if (userId instanceof String) {
+                user = User.get(new ObjectId(userId))
+            } else {
+                user = User.get(userId)
+            }
+        } catch (Exception e) {
+            flash.error = "ID de usuario inválido: ${e.message}"
+            redirect(action: "manageWriters")
+            return
+        }
+
         def writerRole = Role.findByAuthority('ROLE_WRITER')
 
         if (user && writerRole) {
             def userRole = UserRole.findByUserAndRole(user, writerRole)
             if (userRole) {
-                userRole.delete(flush: true)
-                flash.message = "Rol de escritor removido de ${user.username} correctamente"
+                try {
+                    userRole.delete(flush: true)
+                    flash.message = "Rol de escritor removido de ${user.username} correctamente"
+                } catch (Exception e) {
+                    flash.error = "Error al eliminar rol: ${e.message}"
+                }
             } else {
                 flash.error = "El usuario no tiene el rol de escritor"
             }

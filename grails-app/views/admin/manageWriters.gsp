@@ -188,7 +188,7 @@
         </div>
         <div class="header-actions">
             <a href="${createLink(controller: 'home', action: 'homeScreen')}" class="btn btn-primary">🏠 Volver a inicio</a>
-            <form action="/logout" method="POST">
+            <form action="${createLink(uri: '/logout')}" method="POST">
                 <button type="submit" class="btn btn-danger">🔒 Cerrar sesión</button>
             </form>
         </div>
@@ -226,13 +226,13 @@
             <tbody>
             <g:each var="writer" in="${writers}">
                 <tr>
-                    <td>${writer.username}</td>
-                    <td>${writer.email}</td>
+                    <td>${writer.username.encodeAsHTML()}</td>
+                    <td>${writer.email.encodeAsHTML()}</td>
                     <td>
-                        <form action="${createLink(controller: 'admin', action: 'removeWriterRole')}" method="POST">
-                            <input type="hidden" name="userId" value="${writer.id}" />
+                        <g:form action="removeWriterRole" method="POST">
+                            <g:hiddenField name="userId" value="${writer.id}" />
                             <button type="submit" class="btn btn-danger">Quitar rol de escritor</button>
-                        </form>
+                        </g:form>
                     </td>
                 </tr>
             </g:each>
@@ -257,13 +257,13 @@
             <tbody>
             <g:each var="user" in="${nonWriters}">
                 <tr>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
+                    <td>${user.username.encodeAsHTML()}</td>
+                    <td>${user.email.encodeAsHTML()}</td>
                     <td>
-                        <form action="${createLink(controller: 'admin', action: 'addWriterRole')}" method="POST">
-                            <input type="hidden" name="userId" value="${user.id}" />
+                        <g:form action="addWriterRole" method="POST">
+                            <g:hiddenField name="userId" value="${user.id}" />
                             <button type="submit" class="btn btn-success">Asignar rol de escritor</button>
-                        </form>
+                        </g:form>
                     </td>
                 </tr>
             </g:each>
