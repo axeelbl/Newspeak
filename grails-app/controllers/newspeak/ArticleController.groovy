@@ -20,3 +20,4 @@ class ArticleController {
         [article: article]
     }
 }
+

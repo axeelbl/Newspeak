@@ -101,6 +101,15 @@
         background-color: #d35400;
     }
 
+    .btn-info {
+        background-color: #9b59b6;
+        color: #fff;
+    }
+
+    .btn-info:hover {
+        background-color: #8e44ad;
+    }
+
     .section-title {
         font-size: 24px;
         margin-bottom: 20px;
@@ -243,6 +252,7 @@
                         </span>
                     </td>
                     <td class="actions-container">
+                        <a href="${createLink(controller: 'article', action: 'view', id: article.id)}" class="btn btn-info">Ver</a>
                         <a href="${createLink(controller: 'writer', action: 'editArticle', id: article.id)}" class="btn btn-primary">Editar</a>
 
                         <!-- Botón para publicar/despublicar -->
