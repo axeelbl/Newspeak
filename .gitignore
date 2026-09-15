@@ -13,4 +13,13 @@ out/
 .classpath
 .factorypath
 
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Local tooling and reports
+.gradle-*/
+dependency-check-data/
+
 

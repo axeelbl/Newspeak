@@ -134,6 +134,7 @@
     font-size: 18px;
     line-height: 1.8;
     color: #34495e;
+    white-space: pre-wrap;
   }
 
   .article-content p {
@@ -222,7 +223,7 @@
     </div>
 
     <div class="article-content">
-      ${raw(article.content)}
+      ${article.content}
     </div>
 
     <div class="article-actions">

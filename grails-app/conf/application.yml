@@ -1,13 +1,13 @@
 info:
   app:
     name: 'Newspeak'
-    version: '1.0'
-    grailsVersion: '6.2.4'
+    version: '0.7.0'
+    grailsVersion: '6.2.3'
 
 grails:
   mongodb:
-    url: mongodb+srv://admin:XCpYPj7qUQgo2Ldn@cluster0.s4ikkos.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-    databaseName: newspeak
+    url: ${MONGODB_URI:mongodb://localhost:27017/newspeak}
+    databaseName: ${MONGODB_DATABASE:newspeak}
 
   views:
     default:
@@ -101,6 +101,8 @@ grails:
           access: ['permitAll']
         - pattern: '/user/save'
           access: ['permitAll']
+        - pattern: '/actuator/health'
+          access: ['permitAll']
         - pattern: '/home/**'
           access: ['ROLE_USER']
         - pattern: '/**'
@@ -110,7 +112,7 @@ grails:
       failure:
         defaultFailureUrl: '/login/auth?login_error=1'
       logout:
-        postOnly: false
+        postOnly: true
         afterLogoutUrl: '/login/auth'
       successHandler:
         defaultTargetUrl: '/home/index'
@@ -123,15 +125,24 @@ grails:
       passwordParameter: 'password'
       # Activar logging para debug de autenticación
       debug:
-        useFilter: true
+        useFilter: false
 
 # Configuración de Logging
 logging:
   level:
-    org.springframework.security: DEBUG
-    grails.plugin.springsecurity: DEBUG
-    newspeak: DEBUG
-    org.grails.mongodb: DEBUG
+    org.springframework.security: WARN
+    grails.plugin.springsecurity: WARN
+    newspeak: INFO
+    org.grails.mongodb: WARN
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
 
 # Configuración de Hibernate (desactivado para MongoDB)
 hibernate:
@@ -161,5 +172,12 @@ server:
 
 # API key de https://newsapi.org/
 newsapi:
-  key: "133483cbeb2a4d6793487fe95aa5d807"
+  key: ${NEWSAPI_KEY:}
 
+
+newspeak:
+  demoUsers:
+    enabled: ${DEMO_USERS_ENABLED:false}
+    adminPassword: ${DEMO_ADMIN_PASSWORD:}
+    userPassword: ${DEMO_USER_PASSWORD:}
+    writerPassword: ${DEMO_WRITER_PASSWORD:}

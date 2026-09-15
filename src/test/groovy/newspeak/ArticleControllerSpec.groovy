@@ -1,18 +1,17 @@
 package newspeak
 
+import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class ArticleControllerSpec extends Specification implements ControllerUnitTest<ArticleController> {
+class ArticleControllerSpec extends Specification implements ControllerUnitTest<ArticleController>, DomainUnitTest<Article> {
 
-    def setup() {
-    }
+    void 'redirects when an article does not exist'() {
+        when:
+        controller.view()
 
-    def cleanup() {
-    }
-
-    void "test something"() {
-        expect:"fix me"
-            true == false
+        then:
+        response.redirectedUrl == '/home'
+        flash.error == 'Artículo no encontrado'
     }
 }

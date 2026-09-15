@@ -6,7 +6,17 @@ import org.bson.types.ObjectId
 @Secured('ROLE_ADMIN')
 class AdminController {
 
+    static allowedMethods = [
+            blockNews: 'POST',
+            unblockNews: 'POST',
+            addWriterRole: 'POST',
+            removeWriterRole: 'POST',
+            toggleArticleStatus: 'POST',
+            deleteArticle: 'POST'
+    ]
+
     def springSecurityService
+    def newsService
 
     def index() {
         redirect(action: "manageNews")
@@ -22,7 +32,6 @@ class AdminController {
         def reason = params.reason ?: "Contenido inapropiado"
         def username = springSecurityService.currentUser.username
 
-        def newsService = new NewsService()
         if (newsService.blockNews(url, reason, username)) {
             flash.message = "Noticia bloqueada correctamente"
         } else {
@@ -33,7 +42,6 @@ class AdminController {
 
     def unblockNews() {
         def url = params.url
-        def newsService = new NewsService()
         if (newsService.unblockNews(url)) {
             flash.message = "Noticia desbloqueada correctamente"
         } else {
@@ -78,8 +86,8 @@ class AdminController {
             } else {
                 user = User.get(userId)
             }
-        } catch (Exception e) {
-            flash.error = "ID de usuario inválido: ${e.message}"
+        } catch (Exception ignored) {
+            flash.error = "ID de usuario inválido"
             redirect(action: "manageWriters")
             return
         }
@@ -94,7 +102,8 @@ class AdminController {
                     UserRole.create(user, writerRole, true)
                     flash.message = "Rol de escritor asignado a ${user.username} correctamente"
                 } catch (Exception e) {
-                    flash.error = "Error al asignar rol: ${e.message}"
+                    log.warn('Unable to assign writer role', e)
+                    flash.error = "Error al asignar el rol"
                 }
             } else {
                 flash.error = "El usuario ya tiene el rol de escritor"
@@ -117,8 +126,8 @@ class AdminController {
             } else {
                 user = User.get(userId)
             }
-        } catch (Exception e) {
-            flash.error = "ID de usuario inválido: ${e.message}"
+        } catch (Exception ignored) {
+            flash.error = "ID de usuario inválido"
             redirect(action: "manageWriters")
             return
         }
@@ -132,7 +141,8 @@ class AdminController {
                     userRole.delete(flush: true)
                     flash.message = "Rol de escritor removido de ${user.username} correctamente"
                 } catch (Exception e) {
-                    flash.error = "Error al eliminar rol: ${e.message}"
+                    log.warn('Unable to remove writer role', e)
+                    flash.error = "Error al eliminar el rol"
                 }
             } else {
                 flash.error = "El usuario no tiene el rol de escritor"

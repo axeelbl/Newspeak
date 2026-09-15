@@ -494,10 +494,10 @@
                         <h3>${article.title}</h3>
                         <p>${article.description}</p>
                         <div class="news-actions">
-                            <a href="${article.url}" target="_blank" class="read-more">📰 Leer completo</a>
-                            <button class="listen-btn" onclick="reproducirTexto('${article.title?.replaceAll("'", "\\'")}')">🎧 Escuchar</button>
+                            <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more">📰 Leer completo</a>
+                            <button class="listen-btn" data-title="${article.title}">🎧 Escuchar</button>
                             <g:if test="${isAdmin}">
-                                <button class="block-btn" onclick="openBlockModal('${article.url?.replaceAll("'", "\\'")}', '${article.title?.replaceAll("'", "\\'")}')">🚫 Bloquear</button>
+                                <button class="block-btn" data-url="${article.url}" data-title="${article.title}">🚫 Bloquear</button>
                             </g:if>
                         </div>
                     </div>
@@ -589,6 +589,14 @@
     function closeBlockModal() {
         document.getElementById('blockModal').style.display = 'none';
     }
+
+    document.querySelectorAll('.listen-btn').forEach(button => {
+        button.addEventListener('click', () => reproducirTexto(button.dataset.title));
+    });
+
+    document.querySelectorAll('.block-btn').forEach(button => {
+        button.addEventListener('click', () => openBlockModal(button.dataset.url, button.dataset.title));
+    });
 
     // Cerrar modal haciendo click fuera del contenido
     window.addEventListener('click', function(event) {

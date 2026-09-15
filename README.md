@@ -1,104 +1,80 @@
-# 📰 Newspeak
+# Newspeak
 
-Newspeak es una aplicación web desarrollada con Grails siguiendo el patrón MVC. Permite a los usuarios consultar noticias actualizadas a través de la API de NewsAPI.org y escuchar su contenido leído en voz alta mediante el servicio de Audio.
+Newspeak es una aplicación web de noticias construida con Grails 6. Permite buscar noticias de NewsAPI, publicar artículos propios, escucharlos mediante Web Speech API y administrar usuarios, roles y contenido bloqueado.
 
-## 🚀 Características principales
-- Registro e inicio de sesión de usuarios.
-- Visualización de noticias en tiempo real.
-- Opción de escuchar las noticias mediante voz generada por IA.
-- Gestión de usuarios y roles.
-- Perfil de usuario personalizado.
+## Funcionalidad
 
-## 🛠️ Tecnologías utilizadas
-- **Backend**: Grails Framework (Groovy)
-- **Frontend**: GSP (Groovy Server Pages), HTML5, CSS3
-- **Base de datos**: Mongodb
-- **APIs**:
-    - NewsAPI para obtener noticias actualizadas.
-    - Web Speech API para la conversión de texto a voz.
+- Registro e inicio de sesión con Spring Security.
+- Noticias externas en español y artículos locales.
+- Roles de usuario, escritor y administrador.
+- Publicación y moderación de artículos.
+- Lectura en voz alta desde el navegador.
+- Estado de salud en `GET /actuator/health`.
 
-## 📂 Estructura del proyecto
-### Modelos:
-- Article
-- BlockedNews
-- News
-- User
-- Role
-- UserRole
+## Requisitos
 
-### Controladores:
-- ArticleController
-- ErrorController
-- HomeController
-- LoginController
-- NewsController
-- UrlMappingController
-- UserController
-- WritterController
-- AdminController
+- Java 17.
+- MongoDB 6 o posterior, local o administrado.
+- Una clave de [NewsAPI](https://newsapi.org/) para cargar noticias externas.
 
-### Vistas:
-- manageArticles.gsp
-- manageNews.gsp
-- manageWriters.gsp
-- homeScreen.gsp
-- auth.gsp
-- register.gsp
-- createArticle.gsp
-- editArticle.gsp
-- myArticles.gsp
-- error.gsp
-- notFound.gsp
+No es necesario instalar Gradle: el repositorio incluye un wrapper validado.
 
-## ⚙️ Instalación y despliegue
-### Prerrequisitos
-- Java 11 o superior
-- Grails 5.x
-- Tomcat 9 (para producción)
-- Acceso a una instancia Rocky Linux 8 (en despliegue en máquina virtual)
+## Configuración
 
-### Pasos para ejecutar en desarrollo
-1. Clona el repositorio:
-    ```bash
-    git clone https://github.com/tuusuario/newspeak.git
-    cd newspeak
-    ```
-2. Configura tus claves de API en `grails-app/conf/application.yml`:
-    ```yaml
-    newsapi:
-      apiKey: TU_CLAVE_DE_NEWSAPI
-    ```
-3. Ejecuta el proyecto:
-    ```bash
-    ./gradlew bootRun
-    ```
-4. Accede en tu navegador a:
-    ```bash
-    http://localhost:8080
-    ```
+Copia el ejemplo y exporta las variables que necesites; la aplicación no carga el archivo `.env` automáticamente.
 
-### Despliegue en producción
-1. Genera el WAR:
-    ```bash
-    ./gradlew war
-    ```
-2. Copia el archivo `.war` generado a tu servidor con Tomcat 9.
-3. Configura Tomcat para desplegar el WAR.
-4. Asegúrate de que tu servidor permita conexiones salientes para acceder a las APIs externas.
+```bash
+cp .env.example .env
+set -a
+source .env
+set +a
+```
 
-## 🔐 Seguridad
-- Sistema de autenticación basado en roles (User, Admin).
-- Contraseñas cifradas.
-- Protección contra CSRF activada.
+Variables principales:
 
-## ✨ Futuras mejoras
-- Integración de favoritos y guardar noticias.
-- Soporte para múltiples idiomas.
-- Notificaciones en tiempo real.
-- Mejoras de accesibilidad (modo oscuro, navegación por teclado).
+- `MONGODB_URI`: conexión de MongoDB. Por defecto, `mongodb://localhost:27017/newspeak`.
+- `MONGODB_DATABASE`: base de datos. Por defecto, `newspeak`.
+- `NEWSAPI_KEY`: clave de NewsAPI. Si falta, la aplicación sigue mostrando artículos locales.
+- `DEMO_USERS_ENABLED`: habilita usuarios de demostración solo en desarrollo. Por defecto, `false`.
+- `DEMO_ADMIN_PASSWORD`, `DEMO_USER_PASSWORD`, `DEMO_WRITER_PASSWORD`: obligatorias si se habilitan usuarios de demostración; cada una debe tener al menos 12 caracteres.
 
-## 🧑‍💻 Autor
-Desarrollado por: Axel Berral y Iker Infantes
+Nunca confirmes `.env` ni credenciales reales. Si has usado una copia anterior del repositorio, rota las credenciales que estuvieron versionadas: eliminarlas del árbol actual no las elimina del historial de Git.
 
-## 📄 Licencia
-Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
+## Desarrollo
+
+```bash
+./gradlew bootRun
+```
+
+Abre <http://localhost:8080>. Para ejecutar sin NewsAPI, deja `NEWSAPI_KEY` vacía; se mostrarán únicamente los artículos locales.
+
+## Verificación
+
+```bash
+./gradlew clean test assemble --no-daemon
+```
+
+La integración continua ejecuta la misma verificación con Java 17 y valida el Gradle wrapper en cada cambio a `master` y en cada pull request.
+
+## Despliegue
+
+Genera un WAR:
+
+```bash
+./gradlew war --no-daemon
+```
+
+Configura las variables de entorno en el gestor de secretos de la plataforma y usa una cuenta de MongoDB con los permisos mínimos necesarios. No habilites las cuentas de demostración en producción.
+
+## Seguridad
+
+- Los secretos se leen del entorno y no se incluyen en el repositorio.
+- El contenido de artículos se presenta como texto escapado para evitar HTML activo.
+- Las URL externas se restringen a HTTP/HTTPS y las llamadas a NewsAPI tienen límites de tiempo.
+- El cierre de sesión y las operaciones que modifican datos usan solicitudes POST.
+
+Consulta [SECURITY.md](SECURITY.md) para informar de una vulnerabilidad de forma privada.
+
+## Licencia
+
+[MIT](LICENSE).

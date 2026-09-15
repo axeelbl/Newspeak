@@ -5,14 +5,11 @@ import spock.lang.Specification
 
 class ErrorControllerSpec extends Specification implements ControllerUnitTest<ErrorController> {
 
-    def setup() {
-    }
+    void 'renders the generic error page'() {
+        when:
+        controller.error()
 
-    def cleanup() {
-    }
-
-    void "test something"() {
-        expect:"fix me"
-            true == false
+        then:
+        view == '/error'
     }
 }

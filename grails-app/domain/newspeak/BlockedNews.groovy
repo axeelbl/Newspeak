@@ -11,10 +11,14 @@ class BlockedNews {
     String blockedBy
 
     static constraints = {
-        url blank: false, unique: true
-        reason nullable: true
+        url blank: false, unique: true, maxSize: 2048, validator: { value ->
+            if (!(value ==~ /^https?:\/\/.+/) && !(value ==~ /^\/article\/view\/.+/)) {
+                return 'url.invalid'
+            }
+        }
+        reason nullable: true, maxSize: 500
         dateBlocked nullable: true
-        blockedBy nullable: true
+        blockedBy nullable: true, maxSize: 100
     }
 
     static mapping = {

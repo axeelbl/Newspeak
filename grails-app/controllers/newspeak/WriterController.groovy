@@ -5,6 +5,13 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured('ROLE_WRITER')
 class WriterController {
 
+    static allowedMethods = [
+            saveArticle: 'POST',
+            updateArticle: 'POST',
+            deleteArticle: 'POST',
+            togglePublishStatus: 'POST'
+    ]
+
     def springSecurityService
 
     def index() {

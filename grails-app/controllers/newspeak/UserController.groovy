@@ -3,6 +3,8 @@ package newspeak
 import org.springframework.security.crypto.password.PasswordEncoder
 
 class UserController {
+    static allowedMethods = [save: 'POST']
+
     PasswordEncoder passwordEncoder
     def springSecurityService
 
@@ -17,7 +19,15 @@ class UserController {
 
     // Acción para guardar un nuevo usuario
     def save() {
-        if (params.password != params.confirmPassword) {
+        def rawPassword = params.password?.toString()
+        if (!rawPassword || rawPassword.length() < 12) {
+            flash.message = "La contraseña debe tener al menos 12 caracteres"
+            flash.error = true
+            render(view: "register", model: [user: new User(username: params.username, email: params.email)])
+            return
+        }
+
+        if (rawPassword != params.confirmPassword) {
             flash.message = "Las contraseñas no coinciden"
             flash.error = true
             render(view: "register", model: [user: new User(username: params.username, email: params.email)])
@@ -25,9 +35,9 @@ class UserController {
         }
 
         def user = new User(
-                username: params.username,
-                email: params.email,
-                password: passwordEncoder.encode(params.password),
+                username: params.username?.toString()?.trim(),
+                email: params.email?.toString()?.trim()?.toLowerCase(),
+                password: passwordEncoder.encode(rawPassword),
                 enabled: true
         )
 

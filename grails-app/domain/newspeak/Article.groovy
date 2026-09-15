@@ -14,10 +14,14 @@ class Article {
     boolean published = false
 
     static constraints = {
-        title blank: false
-        description blank: false
-        content blank: false
-        imageUrl nullable: true
+        title blank: false, maxSize: 200
+        description blank: false, maxSize: 1000
+        content blank: false, maxSize: 50000
+        imageUrl nullable: true, blank: true, maxSize: 2048, validator: { value ->
+            if (value && !(value ==~ /^https?:\/\/.+/)) {
+                return 'url.invalid'
+            }
+        }
         author nullable: false
     }
 

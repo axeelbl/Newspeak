@@ -16,8 +16,8 @@ class User implements UserDetails {
     boolean passwordExpired = false
 
     static constraints = {
-        username blank: false, unique: true
-        email email: true, blank: false, unique: true  // Y estas restricciones
+        username blank: false, unique: true, size: 3..50
+        email email: true, blank: false, unique: true, maxSize: 254
         password blank: false
     }
 

@@ -7,7 +7,7 @@ class HomeController {
 
     def homeScreen() {
         try {
-            def searchTerm = params.searchTerm
+            def searchTerm = params.searchTerm?.toString()?.trim()?.take(100)
             def articles = searchTerm ? newsService.getTopHeadlines(searchTerm) : newsService.getTopHeadlines()
 
             // Determinar roles del usuario
@@ -27,7 +27,8 @@ class HomeController {
                 return [articles: [], error: "No se pudieron obtener las noticias", isAdmin: isAdmin, isWriter: isWriter]
             }
         } catch (Exception e) {
-            return [articles: [], error: "Error al obtener noticias: ${e.message}", isAdmin: false, isWriter: false]
+            log.warn('Unable to render the news feed', e)
+            return [articles: [], error: "Error al obtener noticias", isAdmin: false, isWriter: false]
         }
     }
 
